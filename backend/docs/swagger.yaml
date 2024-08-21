@@ -1,0 +1,1044 @@
+openapi: 3.0.3
+info:
+  title: Deloitte University API
+  description: |-
+    _Django API Rest - Deloitte University_
+    
+    This is a sample university user management system server based on the OpenAPI 3.0 specification.  
+
+    Some useful links:
+    - [The Deloitte University repository](https://github.com/swagger-api/swagger-petstore)
+    - [The source API definition for the Deloitte University](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+  contact:
+    email: vgerlachhessel@gmail.com
+  version: 1.0.0
+servers:
+  - url: https://localhost:8000/api/v1.0.0/
+tags:
+  - name: student
+    description: Operations about students
+  - name: teacher
+    description: Operations about teachers
+  - name: subject
+    description: Operations about subjects
+  - name: grade
+    description: Operations about subjects
+  - name: login
+    description: Login endpoint
+paths:
+  /student/:
+    get:
+      tags:
+        - student
+      summary: Get all students
+      description: Get all the students
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: available
+            enum:
+              - available
+              - pending
+              - sold
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentResponse'        
+        '400':
+          description: Invalid status value
+    post:
+      tags:
+        - student
+      summary: Add a new student to the university
+      description: Add a new student to the university
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create a new student in the university
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponse'          
+        '405':
+          description: Invalid input
+    
+  
+  /student/{studentId}/:
+    get:
+      tags:
+        - student
+      summary: Find student by ID
+      description: Returns a single student
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: studentId
+          in: path
+          description: ID of student to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponse'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Student not found
+    put:
+      tags:
+        - student
+      summary: Update student
+      description: Update an existing student by Id
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: studentId
+          in: path
+          description: ID of student to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent user in the university app
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponse'          
+        '405':
+          description: Invalid input
+    delete:
+      tags:
+        - student
+      summary: Deletes a student
+      description: Delete a student by ID
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: studentId
+          in: path
+          description: Student id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid student value
+  /student/{studentId}/subjects/:
+    get:
+      tags:
+        - student
+      summary: Find a student's subjects and grades by ID
+      description: Returns the student's data with the subjects and their respective grades.
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: studentId
+          in: path
+          description: ID of student to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentSubjects'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Student not found
+  /teacher/:
+    get:
+      tags:
+        - teacher
+      summary: Get all teachers
+      description: Get all the teachers
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: available
+            enum:
+              - available
+              - pending
+              - sold
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeacherResponse'        
+        '400':
+          description: Invalid status value
+    post:
+      tags:
+        - teacher
+      summary: Add a new teacher to the university
+      description: Add a new teacher to the university
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create a new teacher in the university
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Teacher'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherResponse'          
+        '405':
+          description: Invalid input
+  /teacher/{teacherId}/:
+    get:
+      tags:
+        - teacher
+      summary: Find teacher by ID
+      description: Returns a single teacher
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: teacherId
+          in: path
+          description: ID of teacher to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherResponse'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Student not found
+    put:
+      tags:
+        - teacher
+      summary: Update teacher
+      description: Update an existing teacher by Id
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: teacherId
+          in: path
+          description: ID of teacher to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent user in the university app
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Teacher'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherResponse'          
+        '405':
+          description: Invalid input
+    delete:
+      tags:
+        - teacher
+      summary: Deletes a teacher
+      description: Delete a teacher by ID
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: teacherId
+          in: path
+          description: Teacher id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid teacher value
+  /teacher/{teacherId}/subjects/:
+    get:
+      tags:
+        - teacher
+      summary: Find the teacher, their subjects and students
+      description: Returns data about the teacher, their subjects and students in each subject.
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: teacherId
+          in: path
+          description: ID of teacher to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherStudents'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Student not found
+  /subject/:
+    get:
+      tags:
+        - subject
+      summary: Get all subjects
+      description: Get all the subjects
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: available
+            enum:
+              - available
+              - pending
+              - sold
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectResponse'        
+        '400':
+          description: Invalid status value
+    post:
+      tags:
+        - subject
+      summary: Add a new subject to the university
+      description: Add a new subject to the university
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create a new subject in the university
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subject'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectResponse'          
+        '405':
+          description: Invalid input
+  /subject/{subjectId}/:
+    get:
+      tags:
+        - subject
+      summary: Find subject by ID
+      description: Returns a single subject
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: subjectId
+          in: path
+          description: ID of subject to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectResponse'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Subject not found
+    put:
+      tags:
+        - subject
+      summary: Update subject
+      description: Update an existing subject by Id
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: subjectId
+          in: path
+          description: ID of subject to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent subject in the university app
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subject'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectResponse'          
+        '405':
+          description: Invalid input
+    delete:
+      tags:
+        - subject
+      summary: Deletes a subject
+      description: Delete a subject by ID
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: subjectId
+          in: path
+          description: Subject id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid subject value
+  /subject/{subjectId}/students/:
+    get:
+      tags:
+        - subject
+      summary: Subject and students and their grades
+      description: Subject and students and their grades
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: subjectId
+          in: path
+          description: ID of subject to return students and their grades
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectStudent'        
+        '400':
+          description: Invalid status value
+  /grade/:
+    get:
+      tags:
+        - grade
+      summary: Get all grades
+      description: Get all the grades
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: available
+            enum:
+              - available
+              - pending
+              - sold
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GradeResponse'        
+        '400':
+          description: Invalid status value
+    post:
+      tags:
+        - grade
+      summary: Add a new grade to the student
+      description: Add a new grade to the student
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create a new grade
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Grade'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeResponse'          
+        '405':
+          description: Invalid input
+    
+  
+  /grade/{gradeId}/:
+    get:
+      tags:
+        - grade
+      summary: Find grade by ID
+      description: Returns a single grade
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: gradeId
+          in: path
+          description: ID of grade to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeResponse'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Grade not found
+    put:
+      tags:
+        - grade
+      summary: Update grade
+      description: Update grade by Id
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: gradeId
+          in: path
+          description: ID of grade to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update a grade for students
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Grade'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeResponse'          
+        '405':
+          description: Invalid input
+    delete:
+      tags:
+        - grade
+      summary: Deletes a grade
+      description: Delete a grade by ID
+      parameters:
+        - name: JWT
+          in: header
+          description: 'Json Web Token'
+          required: true
+          schema:
+            type: string
+        - name: gradeId
+          in: path
+          description: Grade id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid grade value
+          
+  /login/:
+    post:
+      tags:
+        - login
+      summary: Username and password authentication
+      description: Enter your username and password to return a JWT
+      requestBody:
+        description: Username and password to authenticate
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'          
+        '405':
+          description: Invalid input
+components:
+  schemas:
+    Student:
+      type: object
+      required: [id]
+      properties:
+        student_name:
+          type: string
+          example: Vinicius
+        student_email:
+          type: string
+          example: example@gmail.com
+        student_birth_date:
+          type: string
+          format: date-time
+          example: 1998-10-07
+        student_password:
+          type: string
+    StudentResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        student_name:
+          type: string
+          example: Vinicius
+        student_email:
+          type: string
+          example: example@gmail.com
+        student_birth_date:
+          type: string
+          format: date-time
+          example: 1998-10-07
+        student_password:
+          type: string
+    StudentSubjects:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        student_name:
+          type: string
+          example: Vinicius
+        student_email:
+          type: string
+          example: example@gmail.com
+        student_birth_date:
+          type: string
+          format: date-time
+          example: 1998-10-07
+        student_password:
+          type: string
+        grades:
+          type: array
+          items:
+            type: object
+            required: [subject-id]
+            properties:
+              id:
+                type: integer
+                format: int64
+                example: 1
+              subject_name: 
+                type: string
+                example: Math
+              subject_workload:
+                type: integer
+                format: int32
+                example: 40
+              teacher_name:
+                type: string
+                example: Wendell
+              grade:
+                type: number
+                format: float
+                example: 10
+    Teacher:
+      type: object
+      required: [id]
+      properties:
+        teacher_name:
+          type: string
+          example: Vinicius
+        teacher_email:
+          type: string
+          example: example@gmail.com
+        teacher_birth_date:
+          type: string
+          example: 1998-10-07
+          format: date-time
+        teacher_password:
+          type: string
+    TeacherResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        teacher_name:
+          type: string
+          example: Vinicius
+        teacher_email:
+          type: string
+          example: example@gmail.com
+        teacher_birth_date:
+          type: string
+          example: 1998-10-07
+          format: date-time
+        teacher_password:
+          type: string
+    TeacherStudents:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        teacher_name:
+          type: string
+          example: Vinicius
+        teacher-email:
+          type: string
+          example: example@gmail.com
+        subject:
+          type: string
+          example: DevOps
+        students:
+          type: array
+          items:
+            type: object
+            required: [student-id]
+            properties:
+              id:
+                type: integer
+                format: int64
+                example: 1
+              student_name: 
+                type: string
+                example: Wendell
+              grade:
+                type: number
+                format: float
+                example: 10
+    Subject:
+      type: object
+      required: [id]
+      properties:
+        subject_name:
+          type: string
+          example: Math
+        subject_workload:
+          type: integer
+          format: int32
+          example: 40
+        teacher_name:
+          type: string
+          example: Vinicius
+    SubjectResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        subject_name:
+          type: string
+          example: Math
+        subject_workload:
+          type: integer
+          format: int32
+          example: 40
+        teacher_name:
+          type: string
+          example: Vinicius
+    SubjectStudent:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        grade:
+          type: integer
+          format: int32
+          example: 10
+        student_name:
+          type: integer
+          format: int64
+          example: 1
+        subject_name:
+          type: integer
+          format: int64
+          example: 1
+    Grade:
+      type: object
+      required: [id]
+      properties:
+        student_name:
+          type: string
+          example: Vinicius
+        subject_name:
+          type: string
+          example: DevOps
+        grade:
+          type: number
+          example: 10
+          format: float
+    GradeResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        student_name:
+          type: string
+          example: Vinicius
+        subject_name:
+          type: string
+          example: DevOps
+        grade:
+          type: number
+          example: 10
+          format: float
+    Login:
+      type: object
+      required: [id]
+      properties:
+        username:
+          type: string
+          example: example@gmail.com
+        password:
+          type: string
+          example: 1234
+    LoginResponse:
+      type: object
+      required: [id]
+      properties:
+        access_token:
+          type: string
+          example: oasnmJHamosh6asjaoamodms4F
+        user_id:
+          type: integer
+          format: int32
+          example: 1
+        username:
+          type: string
+          example: example@gmail.com
+        groups:
+          type: array
+          items:
+            type: object
+            properties: 
+              id:
+                type: integer
+                format: int64
+                example: 1
+              name: 
+                type: string
+                example: teacher
+        teacher:
+          type: object
+          properties: 
+            id:
+              type: integer
+              format: int64
+              example: 1
+            teacher_name: 
+              type: string
+              example: Wendell
+            teacher_email:
+              type: string
+              example: example@gmail.com
+            teacher_birth_date:
+              type: string
+              example: 1998-10-07
+              format: date-time
+
+
+
